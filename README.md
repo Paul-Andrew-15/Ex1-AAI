@@ -1,40 +1,58 @@
 <H3> Name : Paul Andrew D </H3>
+
 <H3>Register No.: 212221230075 </H3>
+
 <H3> Experiment 1 </H3>
+
 <H4> DATE: 07.09.24</H4>
 
+  
 <H1 align-item="center"> Implementation of Bayesian Networks </H1>
 
 
 ## Aim : 
 To create a bayesian Network for the given dataset in Python
+
 ## Algorithm:
 ### Step 1:
 Import necessary libraries: pandas, networkx, matplotlib.pyplot, Bbn, Edge, EdgeType, BbnNode, Variable, EvidenceBuilder, InferenceController
+
 ### Step 2:
 Set pandas options to display more columns
+
 ### Step 3:
 Read in weather data from a CSV file using pandas
+
 ### Step 4:
 Remove records where the target variable RainTomorrow has missing values
+
 ### Step 5:
 Fill in missing values in other columns with the column mean
+
 ### Step 6:
 Create bands for variables that will be used in the model (Humidity9amCat, Humidity3pmCat, and WindGustSpeedCat)
+
 ### Step 7:
 Define a function to calculate probability distributions, which go into the Bayesian Belief Network (BBN)
+
 ### Step 8:
 Create BbnNode objects for Humidity9amCat, Humidity3pmCat, WindGustSpeedCat, and RainTomorrow, using the probs() function to calculate their probabilities
+
 ### Step 9:
 Create a Bbn object and add the BbnNode objects to it, along with edges between the nodes
+
 ### Step 10:
 Convert the BBN to a join tree using the InferenceController
+
 ### Step 11:
 Set node positions for the graph
+
 ### Step 12:
 Set options for the graph appearance
+
 ### Step 13:
 Generate the graph using networkx
+
 ### Step 14:
 Update margins and display the graph using matplotlib.pyplot
 
@@ -45,6 +63,7 @@ import pandas as pd
 import networkx as nx 
 import matplotlib.pyplot as plt 
 ```
+
 # for creating Bayesian Belief Networks (BBN)
 ```pyhton
 from pybbn.graph.dag import Bbn
@@ -56,21 +75,25 @@ from pybbn.pptc.inferencecontroller import InferenceController
 #Set Pandas options to display more columns
 pd.options.display.max_columns=50
 ```
+
 # Read in the weather data csv
 ```pyhton
 df=pd.read_csv('weatherAUS.csv', encoding='utf-8')
 ```
+
 # Drop records where target RainTomorrow=NaN
 ```python
 df=df[pd.isnull(df['RainTomorrow'])==False]
 # Drop the 'Date' column as it is not relevant for the model
 df = df.drop(columns='Date')
 ```
+
 # For other columns with missing values, fill them in with column mean for numeric columns only
 ```python
 numeric_columns = df.select_dtypes(include=['number']).columns
 df[numeric_columns] = df[numeric_columns].fillna(df[numeric_columns].mean())
 ```
+
 # Create bands for variables that we want to use in the model
 ```python
 df['WindGustSpeedCat']=df['WindGustSpeed'].apply(lambda x: '0.<=40'   if x<=40 else
@@ -78,10 +101,12 @@ df['WindGustSpeedCat']=df['WindGustSpeed'].apply(lambda x: '0.<=40'   if x<=40 e
 df['Humidity9amCat']=df['Humidity9am'].apply(lambda x: '1.>60' if x>60 else '0.<=60')
 df['Humidity3pmCat']=df['Humidity3pm'].apply(lambda x: '1.>60' if x>60 else '0.<=60')
 ```
+
 # Show a snaphsot of data
 ```python
 print(df)
 ```
+
 # This function helps to calculate probability distribution, which goes into BBN (note, can handle up to 2 parents)
 ```python
 def probs(data, child, parent1=None, parent2=None):
@@ -99,6 +124,7 @@ def probs(data, child, parent1=None, parent2=None):
     else: print("Error in Probability Frequency Calculations")
     return prob
 ```
+
 # Create nodes by using our earlier function to automatically calculate probabilities
 ```
 python
@@ -107,6 +133,7 @@ H3pm = BbnNode(Variable(1, 'H3pm', ['<=60', '>60']), probs(df, child='Humidity3p
 W = BbnNode(Variable(2, 'W', ['<=40', '40-50', '>50']), probs(df, child='WindGustSpeedCat'))
 RT = BbnNode(Variable(3, 'RT', ['No', 'Yes']), probs(df, child='RainTomorrow', parent1='Humidity3pmCat', parent2='WindGustSpeedCat'))
 ```
+
 # Create Network
 ```python
 bbn = Bbn() \
@@ -118,14 +145,17 @@ bbn = Bbn() \
     .add_edge(Edge(H3pm, RT, EdgeType.DIRECTED)) \
     .add_edge(Edge(W, RT, EdgeType.DIRECTED))
 ```
+
 # Convert the BBN to a join tree
 ```python
 join_tree = InferenceController.apply(bbn)
 ```
+
 # Set node positions
 ```python
 pos = {0: (-1, 2), 1: (-1, 0.5), 2: (1, 0.5), 3: (0, -1)}
 ```
+
 
 # Set options for graph looks
 ```python
@@ -138,6 +168,7 @@ options = {
     "linewidths": 5,
     "width": 5,}
 ```
+
 # Generate graph
 ```python
 n, d = bbn.to_nx_graph()
@@ -156,8 +187,10 @@ plt.show()
 ![image](https://github.com/user-attachments/assets/a6a5fc33-c9b6-42ac-8b09-150fb4a1734e)
 ![image](https://github.com/user-attachments/assets/8addabca-ee14-48d9-ab62-2aab12d70686)
 ![image](https://github.com/user-attachments/assets/2dc40cb0-2346-48b2-bbd4-ddf88487a7b7)
+
 ## Graph:
 ![image](https://github.com/user-attachments/assets/a572165a-68b1-418e-b859-979cf2fda290)
+
 
 ## Result:
    Thus a Bayesian Network is generated using Python
